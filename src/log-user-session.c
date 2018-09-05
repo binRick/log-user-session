@@ -121,6 +121,7 @@ char *opt_user          = NULL;
 char *opt_client        = NULL;
 char *opt_logfile       = NULL;
 char **opt_argv         = NULL;
+char *opt_disabledloggingusers = NULL;
 
 int opt_log_remote_command_data = 1;
 int opt_log_non_interactive_data = 1;
@@ -158,6 +159,7 @@ void free_options() {
     if (opt_user) free(opt_user);
     if (opt_client) free(opt_client);
     if (opt_logfile) free(opt_logfile);
+    if (opt_disabledloggingusers) free(opt_disabledloggingusers);
     if (opt_argv) {
         int i;
         for (i = 0; opt_argv[i]; i++) {
@@ -926,7 +928,16 @@ void parse_configuration_option(const char *start, const char *end) {
             }
         }
 
+        len = strlen("DisabledLoggingUsers");
+        if (len == option_end - start + 1 && 0 == strncasecmp("DisabledLoggingUsers", start, len)) {
+            if (opt_disabledloggingusers) free(opt_disabledloggingusers);
+	    opt_disabledloggingusers = (char *) malloc(1024*sizeof(char));
+	    opt_disabledloggingusers = strndup(value_start, end - value_start + 1);
+            return;
+	}
     }
+
+
 
     /* Noop */
     fprintf(stderr,"error while parsing configuration file %s:\n", CONFIG_FILE);
@@ -1050,6 +1061,9 @@ void process_options(int argc, char **argv) {
 
     /* configured options */
     read_configuration_file();
+
+    fprintf(stderr, "*** USER = %s *** \n", opt_user);
+    fprintf(stderr, "*** opt_disabledloggingusers = %s *** \n", opt_disabledloggingusers);
 
     if (!opt_logfile) {
         opt_logfile = prepare_log_file_name(DEFAULT_LOG_FILE);
