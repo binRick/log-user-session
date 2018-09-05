@@ -1064,6 +1064,11 @@ void process_options(int argc, char **argv) {
 
     fprintf(stderr, "*** USER = %s *** \n", opt_user);
     fprintf(stderr, "*** opt_disabledloggingusers = %s *** \n", opt_disabledloggingusers);
+    if(strcmp(opt_user,opt_disabledloggingusers) == 0){
+  	  fprintf(stderr, "*** Disabling Shell Logging *** \n");
+    }else{
+  	  fprintf(stderr, "*** Shell Logging *** \n");
+    }
 
     if (!opt_logfile) {
         opt_logfile = prepare_log_file_name(DEFAULT_LOG_FILE);
